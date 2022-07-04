@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        #conteiner{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 30px;
+            display: none;
+        }
+        #idCanvas{
+            border:1.5px solid #000000;
+        }
+        #pontos{
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+            gap: 5px;
+        }
+        #pontos > h2{
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="conteiner">
+        <canvas id="idCanvas" width="600" height="600">
+            Se seu navegador não suportar HTML5 você verá esta mensagem.
+        </canvas>
+        <div id="pontos">
+            <h2>Pontos</h2>
+            <div id="p"></div>
+        </div>
+    </div>
+    <div id="conteinerform">
+        <input type="text" name="" id="sala">
+        <button onclick="entrarGame()">entrar</button>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    var sprits = [];
+    const c=document.getElementById("idCanvas"); 
+    const p = document.getElementById('p');
+
+    const ctx=c.getContext("2d");
+
+    socket.on('update', (s, socket) => {
+        const i = s.findIndex( (element) => element.id === socket);
+        if(i!=-1){
+            s[i].cor = '#0000ff';
+        }
+        sprits = s;
+    });
+    socket.on('j', (jogadores, socket) => {
+        p.innerHTML = "";
+        jogadores.map(j => {
+            p.append(j.id+': '+j.score+'          ')
+            
+        })
+    })
+    function renderFrame(){
+        requestAnimationFrame(renderFrame);
+        socket.emit("reload");
+        render();
+    }
+
+    function entrarGame(){
+        const salaId = document.getElementById('sala').value;
+        const con = document.getElementById('conteinerform');
+        const conteiner=document.getElementById("conteiner"); 
+        socket.emit('entrarGame', salaId);
+        con.style.display = 'none';
+        conteiner.style.display = 'flex';
+        renderFrame();
+    }
+    window.addEventListener("keydown",keydownHandler);
+    window.addEventListener("keyup",keyupHandler);
+
+    function keydownHandler(e){
+        var key = e.keyCode;
+        socket.emit('keydown', key);
+    }
+    function keyupHandler(e){
+        var key = e.keyCode;
+        socket.emit('keyup', key);
+    }
+
+    function render(){
+        ctx.clearRect(0, 0, 600, 600);
+        sprits.map(s => {
+            ctx.fillStyle = s.cor;
+            ctx.fillRect(s.x, s.y, s.WIDTH, s.WIDTH);
+        });
+        // ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+    }
+
+    socket.on('error', (res) => {
+        alert(res)
+        window.location.replace("/");
+    })
+</script>
+</html>

@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: gabriel21
+    ports:
+      - 27017:27017
+  mongo-express:
+    image: mongo-express
+    container_name: mongoexpress
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: gabriel21
+      ME_CONFIG_MONGODB_URL: mongodb://admin:gabriel21@mongo:27017/
+  api:
+    container_name: api
+    image: node:latest
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - /home/teste/Desktop/gabriel:/home/node/app  # Ajuste o caminho aqui
+    ports:
+      - 3000:3000
+    command: "node app.js"  # Ajuste o nome do arquivo principal do seu aplicativo
+
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt

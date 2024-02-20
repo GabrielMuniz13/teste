@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: gabriel21
     ports:
-      - 27017:27017
+      - 27018:27018
   mongo-express:
     image: mongo-express
     container_name: mongoexpress
@@ -32,7 +32,7 @@ services:
     volumes:
       - /home/teste/Desktop/gabriel:/home/node/app  # Ajuste o caminho aqui
     ports:
-      - 3000:3000
+      - 3001:3001
     command: "node app.js"  # Ajuste o nome do arquivo principal do seu aplicativo
 
   nginx:

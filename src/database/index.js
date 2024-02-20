@@ -1,6 +1,6 @@
 
 import mongoose from 'mongoose';
-// MONGO_URI=mongodb://admin:gabriel21@mongo:27017/
+// MONGO_URI=mongodb://admin:gabriel21@mongo:2701/
 const conectarBancoDeDados = async () => {
   const mongoUser = process.env.MONGO_USER
   const mongoPass = process.env.MONGO_PASS
@@ -14,7 +14,7 @@ const conectarBancoDeDados = async () => {
   //   console.error('Erro de conexão com o MongoDB:', error);
   // }
   try {
-    await mongoose.connect("mongodb://mongo:27017/api", {
+    await mongoose.connect("mongodb://mongo:27018/api", {
       auth: { username: mongoUser, password: mongoPass},
       authSource: "admin",
     });

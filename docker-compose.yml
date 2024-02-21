@@ -11,12 +11,16 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: gabriel21
     ports:
       - 27018:27018
+    proxy_manager:
+      - proxy_manager
   mongo-express:
     image: mongo-express
     container_name: mongoexpress
     restart: always
     ports:
       - 8081:8081
+    proxy_manager:
+        - proxy_manager
     environment:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
@@ -34,7 +38,8 @@ services:
     ports:
       - 3001:3001
     command: "node app.js"  # Ajuste o nome do arquivo principal do seu aplicativo
-
+    proxy_manager:
+        - proxy_manager
   nginx:
     image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
@@ -46,3 +51,9 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+    proxy_manager:
+      - proxy_manager
+
+  networks:
+    proxy_manager:
+      name: proxy_manager
